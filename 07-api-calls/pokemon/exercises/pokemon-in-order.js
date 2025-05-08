@@ -10,10 +10,10 @@ import { ORIGIN } from '../config.js';
  *
  * @throws {Error} HTTP error! status: {number}.
  */
-export const pokemonInOrder = async () => {
+export const pokemonInOrder = async (limit = 1, offset = 0) => {
     // --- generate and declare your resource's URL ---
     // docs: https://pokeapi.co/docs/v2#resource-listspagination-section
-    const URL = _;
+    const URL = `${ORIGIN}/pokemon?limit=${limit}&offset=${offset}`;
 
     // --- fetch the API data (this works!) ---
     const encodedURL = encodeURI(URL);
@@ -33,7 +33,10 @@ export const pokemonInOrder = async () => {
     // --- process the fetched data (if necessary) ---
     //  you do not need to use `await` below this comment
     //  you can refactor this to a separate logic function and test it
-    const pokemon = _;
+    const pokemon = data.results.map(p => ({
+        name: p.name,
+        url: p.url
+    }));;
 
     // --- return the final data ---
     return pokemon;

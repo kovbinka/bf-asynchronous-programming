@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "jest --coverage",
-    "format": "prettier --write ./"
+    "format": "prettier --write ./",
+    "study": "lenses2"
   },
   "repository": {
     "type": "git",

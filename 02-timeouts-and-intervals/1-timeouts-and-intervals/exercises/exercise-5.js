@@ -4,11 +4,17 @@ const { log } = labeledLogger();
 
 // sort the array into `sorted` using side-effects
 const sortArray = (unsorted, sorted) => {
+  unsorted.forEach(item => {
+    const delay = item ? item.charCodeAt() : 0;
+    setTimeout(() => {
+      sorted.push(item);
+    }, delay);
+  });
+  }
     // iterate through each item in the unsorted array
     //  for each item creat a timeout
     //    in the timeout callback, push the item into `sorted`
     //    the timeout should delay for item.charCodeAt()
-};
 
 // can you figure out why the tests pass in the order they do?
 // is it possible for a test never to finish?
