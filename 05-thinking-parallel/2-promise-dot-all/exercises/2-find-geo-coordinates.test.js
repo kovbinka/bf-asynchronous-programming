@@ -1,9 +1,35 @@
 import { fetchUserById } from '../../../lib/fetch-user-by-id/index.js';
 
 /**
- *
+ * Fetches geo coordinates for users by their IDs.
+ * @param {number[]} [ids=[]] - Array of user IDs.
+ * @returns {Promise<{lat: string, lng: string}[]>} Array of geo coordinate objects.
  */
-const findGeoCoordinates = async (ids = []) => {};
+
+const usersFetch = async (id) => {
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+    if (res.status !== 200) {
+      throw new Error(`Failed to fetch user with status: ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+};
+
+const findGeoCoordinates = async (ids = []) => {
+  const userPromises = ids.map((id) => usersFetch(id));
+  const users = await Promise.all(userPromises);
+  const coordinates = users
+    .filter((user) => user && user.address && user.address.geo)
+    .map((user) => ({
+      lat: user.address.geo.lat,
+      lng: user.address.geo.lng,
+    }));
+  return coordinates;
+};
 
 // --- --- tests --- ---
 

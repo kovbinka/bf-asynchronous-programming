@@ -35,10 +35,10 @@ const inputANumberExecutor = (resolve, reject) => {
     const isANumber =
         userInput !== '' && userInput !== null && !Number.isNaN(userNumber);
 
-    if (_) {
-        _(_);
+    if (isANumber) {
+        resolve('succes!');
     } else {
-        _('input is not a number: ' + userInput);
+        reject('input is not a number: ' + userInput);
     }
 };
 const handleRejection = (err) => {
@@ -50,10 +50,10 @@ const isEvenNumber = (resolvedValue) => {
 };
 
 // use callbacks
-new Promise(_)
-    ._(_) // is the number greater than zero?
-    ._(_) // is the number even?
-    ._(_) // log the success/failure of the user's input
-    ._(_); // did an error or rejection occur?
+new Promise(mustBeGreaterThanZero, logSuccessFailure, inputANumberExecutor, handleRejection)
+    .then(mustBeGreaterThanZero) // is the number greater than zero?
+    .then(logSuccessFailure) // is the number even?
+    .then(inputANumberExecutor) // log the success/failure of the user's input
+    .catch(handleRejection); // did an error or rejection occur?
 
 log('= = = =  the call stack is empty  = = = =');

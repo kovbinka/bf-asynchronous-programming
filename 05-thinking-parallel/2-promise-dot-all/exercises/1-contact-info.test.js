@@ -1,9 +1,36 @@
 import { fetchUserById } from '../../../lib/fetch-user-by-id/index.js';
 
 /**
- *
+ * Fetches a user by ID from the JSONPlaceholder API.
+ * @param {number} id - The ID of the user to fetch.
+ * @returns {Promise<Object|undefined>} The user object or undefined if the fetch fails.
  */
-const getIntros = async (ids = []) => {};
+const usersFetch = async (id) => {
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+    if (res.status !== 200) {
+      throw new Error(`Failed to fetch user with status: ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+};
+
+/**
+ * Generates an array of user introductions based on provided IDs.
+ * @param {number[]} [ids=[]] - Array of user IDs.
+ * @returns {Promise<string[]>} Array of introduction strings.
+ */
+const getIntros = async (ids = []) => {
+  const userPromises = ids.map((nextId) => usersFetch(nextId));
+  const users = await Promise.all(userPromises);
+  const names = users
+    .filter((user) => user)
+    .map((user) => `${user.id}: Hello, my name is ${user.name}`);
+  return names;
+};
 
 // --- --- tests --- ---
 

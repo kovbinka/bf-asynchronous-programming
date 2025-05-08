@@ -3,9 +3,35 @@ import { fetchUserById } from '../../../lib/fetch-user-by-id/index.js';
 // --- declare function ---
 
 /**
- *
+ * Fetches a user by ID from the JSONPlaceholder API.
+ * @param {number} id - The ID of the user to fetch.
+ * @returns {Promise<Object|undefined>} The user object or undefined if the fetch fails.
  */
-const createSummaries = async (ids = []) => {};
+const usersFetch = async (id) => {
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+    if (res.status !== 200) {
+      throw new Error(`Failed to fetch user with status: ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+};
+
+const createSummaries = async (ids = []) => {
+  const userPromises = ids.map((id) => usersFetch(id));
+  const users = await Promise.all(userPromises);
+  const coordinates = users
+    .filter((user) => user && user.address && user.address.city && user.company && user.company.name)
+    .map((user) => ({
+      name: user.name,
+      city: user.address.city,
+      companyName: user.company.name,
+    }));
+  return coordinates;
+};
 
 // --- --- tests --- ---
 
