@@ -6,18 +6,21 @@ import { ORIGIN } from '../config.js';
  * @async
  * @param {boolean} [completed=true] - Whether to fetch complete or incomplete todos.
  * @returns {Promise<array>} A promise that resolves to an array of todos.
- * @throws {Error} HTTP error! status: {number}
+ * @throws {Error} If an HTTP error occurs or response parsing fails.
  */
-export const todosByCompleted = async () => {
-    // --- declare your resource's URL ---
-    // use params to fetch only the todos you need
-    const URL = _;
+export const todosByCompleted = async (completed = true) => {
+    // Validate completed parameter
+    if (typeof completed !== 'boolean') {
+        throw new Error('completed must be a boolean');
+    }
 
-    // --- fetch the API data (this works!) ---
-    const encodedURL = encodeURI(URL);
-    const response = await fetch(encodedURL);
+    // Construct URL with resource path and query parameter
+    const URL = `${ORIGIN}/todos?completed=${completed}`;
 
-    // --- throw an error if the response is not ok (this works!) ---
+    // Fetch the API data
+    const response = await fetch(URL);
+
+    // Check for HTTP errors
     if (!response.ok) {
         const message = response.statusText
             ? `${response.status}: ${response.statusText}\n-> ${URL}`
@@ -25,9 +28,14 @@ export const todosByCompleted = async () => {
         throw new Error(message);
     }
 
-    /* --- parse the data if the response was ok (this works!) ---*/
-    const data = await response.json();
+    // Parse the data
+    let data;
+    try {
+        data = await response.json();
+    } catch (error) {
+        throw new Error(`Failed to parse response as JSON: ${error.message}\n-> ${URL}`);
+    }
 
-    // --- return the data ---
+    // Return the data
     return data;
 };

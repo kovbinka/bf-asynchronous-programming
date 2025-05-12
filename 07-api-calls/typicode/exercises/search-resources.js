@@ -11,9 +11,14 @@ import { ORIGIN } from '../config.js';
  * @throws {Error} HTTP error! status: {number}.
  */
 export const searchResources = async (resourceType = '', searchQuery = '') => {
+
+    if (!resourceType) {
+      throw new Error('resourceType cannot be empty');
+    }
     // --- declare your resource's URL ---
     // hint: https://github.com/typicode/json-server#full-text-search
-    const URL = _;
+    const query = searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : '';
+    const URL = `${ORIGIN}/${resourceType}/${query}`;
 
     // --- fetch the API data (this works!) ---
     const encodedURL = encodeURI(URL);
@@ -28,7 +33,12 @@ export const searchResources = async (resourceType = '', searchQuery = '') => {
     }
 
     /* --- parse the data if the response was ok (this works!) ---*/
-    const data = await response.json();
+    let data;
+    try {
+        data = await response.json();
+    } catch (error) {
+        throw new Error(`Failed to parse response as JSON: ${error.message}\n-> ${URL}`);
+    }
 
     // --- return the final data ---
     return data;
