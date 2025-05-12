@@ -4,21 +4,23 @@ import { ORIGIN } from '../config.js';
  * Fetches a single user with the given user name.
  *
  * @async
- * @param {string} [userName=''] - The user name to request.
+ * @param {string} userName - The user name to request.
  * @returns {Promise<object|null>} The user object if it exists, otherwise null.
- *
- * @throws {Error} HTTP error! status: {number}.
+ * @throws {Error} If userName is empty, an HTTP error occurs, or response parsing fails.
  */
-export const userByUsername = async (userName = '') => {
-    // --- declare your resource's URL ---
-    // hint: ctr-f "filter" -> https://github.com/typicode/json-server
-    const URL = _;
+export const userByUsername = async (userName) => {
+    // Validate userName
+    if (!userName || typeof userName !== 'string') {
+        throw new Error('userName must be a non-empty string');
+    }
 
-    // --- fetch the API data (this works!) ---
-    const encodedURL = encodeURI(URL);
-    const response = await fetch(encodedURL);
+    // Declare the resource's URL
+    const URL = `${ORIGIN}/users?username=${encodeURIComponent(userName)}`;
 
-    // --- throw an error if the response is not ok (this works!) ---
+    // Fetch the API data
+    const response = await fetch(URL);
+
+    // Throw an error if the response is not ok
     if (!response.ok) {
         const message = response.statusText
             ? `${response.status}: ${response.statusText}\n-> ${URL}`
@@ -26,13 +28,17 @@ export const userByUsername = async (userName = '') => {
         throw new Error(message);
     }
 
-    /* --- parse the data if the response was ok (this works!) ---*/
-    const data = await response.json();
+    // Parse the data
+    let data;
+    try {
+        data = await response.json();
+    } catch (error) {
+        throw new Error(`Failed to parse response as JSON: ${error.message}\n-> ${URL}`);
+    }
 
-    // --- process the fetched data (if necessary) ---
-    //   you do not need to use `await` below this comment
-    const user = _;
+    // Process the fetched data
+    const user = data.length > 0 ? data[0] : null;
 
-    // --- return the final data ---
+    // Return the final data
     return user;
 };
